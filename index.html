@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OnlineBadganMall - Timmapur</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Welcome to OnlineBadganMall</h1>
+    <p>Home Delivery Available in Timmapur!</p>
+    <p>CEO: Mr. Mohammed Shafee</p>
+</header>
+
+<nav>
+    <a href="#products">Products</a>
+    <a href="#order">Place Order</a>
+    <a href="#contact">Contact Us</a>
+</nav>
+
+<div class="container" id="products">
+    <h2>Our Products</h2>
+    <div class="product">
+        <img src="https://via.placeholder.com/200x150?text=Rice" alt="Rice">
+        <h3>Rice - ₹50/kg</h3>
+        <button onclick="addToCart('Rice', 50)">Add to Cart</button>
+    </div>
+    <div class="product">
+        <img src="https://via.placeholder.com/200x150?text=Dal" alt="Dal">
+        <h3>Dal - ₹80/kg</h3>
+        <button onclick="addToCart('Dal', 80)">Add to Cart</button>
+    </div>
+    <div class="product">
+        <img src="https://via.placeholder.com/200x150?text=Oil" alt="Oil">
+        <h3>Cooking Oil - ₹120/litre</h3>
+        <button onclick="addToCart('Oil', 120)">Add to Cart</button>
+    </div>
+</div>
+
+<div class="cart" id="cart">
+    <h3>Cart</h3>
+    <ul id="cart-items"></ul>
+    <strong>Total: ₹<span id="total">0</span></strong>
+</div>
+
+<div class="order-form" id="order">
+    <h2>Place Your Order</h2>
+    <!-- Replace YOUR_FORM_ID with your Formspree ID -->
+    <form id="orderForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" placeholder="Your Name" required>
+        <label>Phone:</label>
+        <input type="text" name="phone" placeholder="Phone Number" required>
+        <label>Address:</label>
+        <textarea name="address" placeholder="Delivery Address in Timmapur" required></textarea>
+        <label>Order Details:</label>
+        <textarea name="order_details" readonly id="order_details"></textarea>
+        <button type="submit">Submit Order</button>
+    </form>
+</div>
+
+<footer id="contact">
+    <p>Contact: 9999999999 | Visit us in Timmapur</p>
+    <p>CEO: Mr. Mohammed Shafee</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

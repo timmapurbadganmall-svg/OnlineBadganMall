@@ -19,118 +19,126 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 <body>
 
 <header>
-<h1>Place Your Order</h1>
-<p>Home Delivery Available in Timmapur!</p>
+  <h1>Place Your Order</h1>
+  <p>Home Delivery Available in Timmapur!</p>
 </header>
 
 <nav>
-<a href="index.html">Products</a>
-<a href="order.html">Place Order</a>
-<a href="contact.html">Contact Us</a>
+  <a href="index.html">Products</a>
+  <a href="order.html">Place Order</a>
+  <a href="contact.html">Contact Us</a>
 </nav>
 
 <div class="order-form">
-<h2>Your Cart</h2>
-<ul id="cart-items"></ul>
-<div class="cart-summary">
-<p id="total-amount"></p>
-<p id="delivery-charge"></p>
-<p id="grand-total"></p>
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <div class="cart-summary">
+    <p id="total-amount"></p>
+    <p id="delivery-charge"></p>
+    <p id="grand-total"></p>
+  </div>
+
+  <h2>Delivery Details</h2>
+  <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Your Name" required>
+
+    <label for="mobile">Mobile:</label>
+    <div class="phone-container">
+      <span>🇮🇳 +91</span>
+      <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
+    </div>
+
+    <label for="address">Address:</label>
+    <textarea id="address" name="address" placeholder="Delivery Address in Timmapur" required></textarea>
+
+    <input type="hidden" id="order_details" name="order_details">
+    <button type="submit" id="submitOrderBtn" disabled>Submit Order</button>
+  </form>
 </div>
 
-<h2>Delivery Details</h2>
-<form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
-<label for="name">Name:</label>
-<input type="text" id="name" name="name" placeholder="Your Name" required>
-
-<label for="mobile">Mobile:</label>
-<div class="phone-container">
-<span>🇮🇳 +91</span>
-<input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
-</div>
-
-<label for="address">Address:</label>
-<textarea id="address" name="address" placeholder="Delivery Address in Timmapur" required></textarea>
-
-<input type="hidden" id="order_details" name="order_details">
-<button type="submit" id="submitOrderBtn" disabled>Submit Order</button>
-</form>
-</div>
-
-<script src="script.js"></script>
 <script>
-// ------------------ Render Cart ------------------
+// ---------------- Render Cart ----------------
 function renderOrderCart() {
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const cartItems = document.getElementById('cart-items');
-    if(!cartItems) return;
-    cartItems.innerHTML = '';
-    let total = 0;
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const cartItems = document.getElementById('cart-items');
+  if (!cartItems) return;
 
-    cart.forEach(item => {
-        total += item.price * item.qty;
-        cartItems.innerHTML += `<li class="cart-item">
-            <img src="${item.photo}" alt="${item.name}">${item.name} x ${item.qty} - ₹${item.price*item.qty}
-        </li>`;
-    });
+  cartItems.innerHTML = '';
+  let total = 0;
 
-    const deliveryCharge = 10;
-    document.getElementById('total-amount').innerText = `Total Amount: ₹${total}`;
-    document.getElementById('delivery-charge').innerText = `Delivery Charge: ₹${deliveryCharge}`;
-    document.getElementById('grand-total').innerText = `Grand Total: ₹${total + deliveryCharge}`;
+  cart.forEach(item => {
+    total += item.price * item.qty;
+    cartItems.innerHTML += `
+      <li class="cart-item">
+        <img src="${item.photo}" alt="${item.name}">${item.name} x ${item.qty} - ₹${item.price * item.qty}
+      </li>`;
+  });
 
-    document.getElementById('order_details').value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
-        `\nTotal Amount: ₹${total}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${total + deliveryCharge}`;
+  const deliveryCharge = 10;
+  document.getElementById('total-amount').innerText = `Total Amount: ₹${total}`;
+  document.getElementById('delivery-charge').innerText = `Delivery Charge: ₹${deliveryCharge}`;
+  document.getElementById('grand-total').innerText = `Grand Total: ₹${total + deliveryCharge}`;
 
-    updateSubmitButton();
+  document.getElementById('order_details').value =
+    cart.map(i => `${i.name} x ${i.qty} - ₹${i.price * i.qty}`).join("\n") +
+    `\nTotal Amount: ₹${total}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${total + deliveryCharge}`;
+
+  updateSubmitButton();
 }
 
-// ------------------ Enable Submit Button ------------------
+// ---------------- Enable Submit Button ----------------
 const nameInput = document.getElementById('name');
 const addressInput = document.getElementById('address');
 const mobileInput = document.getElementById('mobile');
 const submitBtn = document.getElementById('submitOrderBtn');
 
 function getCartTotal() {
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    return cart.reduce((sum,i)=> sum+i.price*i.qty,0);
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  return cart.reduce((sum, i) => sum + i.price * i.qty, 0);
 }
 
 function updateSubmitButton() {
-    const name = nameInput.value.trim();
-    const address = addressInput.value.trim();
-    const total = getCartTotal();
-    submitBtn.disabled = !(name && address && total >= 500);
+  const name = nameInput.value.trim();
+  const address = addressInput.value.trim();
+  const total = getCartTotal();
+  const digits = mobileInput.value.replace(/\D/g, '');
+
+  submitBtn.disabled = !(name && address && digits.length === 10 && total >= 500);
 }
 
-// ------------------ Event Listeners ------------------
-[nameInput,addressInput].forEach(el=>el.addEventListener('input', updateSubmitButton));
+// ---------------- Event Listeners ----------------
+[nameInput, addressInput, mobileInput].forEach(el =>
+  el.addEventListener('input', updateSubmitButton)
+);
 
-mobileInput.addEventListener('input', function(){
-    let digits = this.value.replace(/\D/g,'').substring(0,10);
-    this.value = digits;
+mobileInput.addEventListener('input', function () {
+  let digits = this.value.replace(/\D/g, '').substring(0, 10);
+  this.value = digits;
+  updateSubmitButton();
 });
 
-// ------------------ Form Submit ------------------
-document.getElementById('orderForm').addEventListener('submit', function(e){
-    const total = getCartTotal();
-    if(total < 500){
-        e.preventDefault();
-        alert("Minimum order amount is ₹500");
-        return;
-    }
-    const digits = mobileInput.value.replace(/\D/g,'');
-    if(digits.length !== 10){
-        e.preventDefault();
-        alert("Please enter a valid 10-digit mobile number");
-        return;
-    }
+// ---------------- Form Submit ----------------
+document.getElementById('orderForm').addEventListener('submit', function (e) {
+  const total = getCartTotal();
+  const digits = mobileInput.value.replace(/\D/g, '');
 
-    setTimeout(()=>{
-        localStorage.removeItem('cart');
-        renderOrderCart();
-        alert("Order submitted! You will receive confirmation email.");
-    },100);
+  if (total < 500) {
+    e.preventDefault();
+    alert("Minimum order amount is ₹500");
+    return;
+  }
+  if (digits.length !== 10) {
+    e.preventDefault();
+    alert("Please enter a valid 10-digit mobile number");
+    return;
+  }
+
+  setTimeout(() => {
+    localStorage.removeItem('cart');
+    renderOrderCart();
+    alert("Order submitted! You will receive a confirmation email.");
+  }, 100);
 });
 
 document.addEventListener("DOMContentLoaded", renderOrderCart);

@@ -51,39 +51,52 @@
     <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
         <label>Name:</label>
         <input type="text" name="name" placeholder="Your Name" required>
+<style>
+.phone-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 8px;
+  width: 260px;
+  font-size: 16px;
+}
+.phone-container span {
+  margin-right: 8px;
+  font-size: 18px;
+}
+.phone-container input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 16px;
+}
+</style>
+
 <label for="mobile">Mobile:</label>
-<input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number" required>
+<div class="phone-container">
+  <span>🇮🇳 +91</span>
+  <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
+</div>
 
 <script>
 const mobileInput = document.getElementById("mobile");
 
-// Default +91 prefix set
-mobileInput.value = "+91 ";
-
-// Input par check karo
+// Sirf digits aur max 10 digits allow karo
 mobileInput.addEventListener("input", function () {
-    // Agar +91 se start nahi ho raha to fix karo
-    if (!this.value.startsWith("+91 ")) {
-        this.value = "+91 ";
-    }
-
-    // +91 ke baad sirf digits allow karo
-    this.value = this.value.replace(/[^+\d\s]/g, "");
-
-    // Extra characters (10 digits se zyada) ko cut karo
-    let digits = this.value.replace("+91 ", "").replace(/\D/g, "");
+    let digits = this.value.replace(/\D/g, ""); // non-digits hatao
     if (digits.length > 10) {
         digits = digits.substring(0, 10);
     }
-    this.value = "+91 " + digits;
+    this.value = digits;
 });
 
-// Form submit par 10 digit check karo
+// Form submit par check
 document.querySelector("form")?.addEventListener("submit", function (e) {
-    let digits = mobileInput.value.replace("+91 ", "").replace(/\D/g, "");
+    let digits = mobileInput.value.replace(/\D/g, "");
     if (digits.length !== 10) {
         e.preventDefault();
-        alert("Please enter a valid 10-digit mobile number after +91");
+        alert("Please enter a valid 10-digit mobile number");
     }
 });
 </script>

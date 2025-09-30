@@ -24,11 +24,11 @@
     <h2>Our Products</h2>
     <div class="product">
         <img src="images/Rice.jpg" alt="Rice" width="200" height="150">
-        <h3>Rice - ₹250/kg</h3>
-        <button onclick="addToCart('Rice', 250)">Add to Cart</button>
+        <h3>Rice - ₹75/kg</h3>
+        <button onclick="addToCart('Rice', 75)">Add to Cart</button>
     </div>
     <div class="product">
-	<img src="images/Mungdal.jpg" alt="Mung Dal - 1 Kg" width="200" height="150">
+	<img src="images/Mungdal.jpg" alt="Mung Dal" width="200" height="150">
         <h3>Mung Dal - ₹80/kg</h3>
         <button onclick="addToCart('Mung Dal', 80)">Add to Cart</button>
     </div>
@@ -51,8 +51,26 @@
     <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
         <label>Name:</label>
         <input type="text" name="name" placeholder="Your Name" required>
-        <label>Phone:</label>
-        <input type="text" name="phone" placeholder="Phone Number" required>
+       <label for="mobile">Mobile:</label>
+	<input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number" required>
+
+<script>
+const mobileInput = document.getElementById("mobile");
+
+// Default +91 prefix set
+mobileInput.value = "+91 ";
+
+// Har input par check karo
+mobileInput.addEventListener("input", function () {
+    // Agar +91 se start nahi hota to wapas add kar do
+    if (!this.value.startsWith("+91 ")) {
+        this.value = "+91 ";
+    }
+    // +91 ke baad sirf digits allow karo
+    this.value = this.value.replace(/[^+\d\s]/g, "");
+});
+</script>
+
         <label>Address:</label>
         <textarea name="address" placeholder="Delivery Address in Timmapur" required></textarea>
         <label>Order Details:</label>

@@ -34,7 +34,7 @@
         <label>Order Details:</label>
         <textarea name="order_details" readonly id="order_details"></textarea>
 
-        <button type="submit">Submit Order</button>
+        <button type="submit" id="submitOrderBtn">Submit Order</button>
     </form>
 </div>
 
@@ -43,6 +43,29 @@
     <p>CEO: Mr. Mohammed Shafee</p>
 </footer>
 
-<script src="script.js"></script>
+<script>
+// Wait until page loads
+document.addEventListener("DOMContentLoaded", function () {
+    const orderDetails = document.getElementById("order_details");
+    const submitBtn = document.getElementById("submitOrderBtn");
+
+    // Get cart items from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (cart.length > 0) {
+        // Populate textarea with cart items
+        let detailsText = "";
+        cart.forEach(item => {
+            detailsText += `${item.name} - Quantity: ${item.qty}\n`;
+        });
+        orderDetails.value = detailsText;
+        submitBtn.disabled = false; // enable submit
+    } else {
+        orderDetails.value = "Your cart is empty.";
+        submitBtn.disabled = true; // disable submit
+    }
+});
+</script>
+
 </body>
 </html>

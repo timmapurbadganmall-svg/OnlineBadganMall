@@ -96,7 +96,11 @@ button:disabled { background-color: #ccc; cursor: not-allowed; }
 
 <script src="script.js"></script>
 <script>
-// ------------------ Mobile Input Validation ------------------
+// ------------------ Cart Initialization ------------------
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+// Ensure qty exists and numeric
+cart = cart.map(item => ({...item, qty: item.qty ? Number(item.qty) : 1}));
+
 const mobileInput = document.getElementById("mobile");
 const nameInput = document.getElementById("name");
 const addressInput = document.getElementById("address");
@@ -104,18 +108,20 @@ const submitBtn = document.getElementById("submitOrderBtn");
 const minOrderWarning = document.getElementById("min-order-warning");
 const deliveryCharge = 10;
 
-// Load cart from localStorage
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-// Mobile: only digits, max 10
+// ------------------ Mobile Validation ------------------
 mobileInput.addEventListener("input", () => {
     let digits = mobileInput.value.replace(/\D/g, "").substring(0, 10);
     mobileInput.value = digits;
 });
 
-// Enable/disable submit button based on all conditions
+// ------------------ Total Calculation ------------------
+function getTotalAmount() {
+    return cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.qty)), 0);
+}
+
+// ------------------ Update Submit Button ------------------
 function updateSubmitButton() {
-    const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
+    const totalAmount = getTotalAmount();
     const name = nameInput.value.trim();
     const address = addressInput.value.trim();
 
@@ -123,12 +129,7 @@ function updateSubmitButton() {
     submitBtn.disabled = !(totalAmount >= 500 && name !== "" && address !== "");
 }
 
-// Listen to Name & Address input changes
-[nameInput, addressInput].forEach(input=>{
-    input.addEventListener("input", updateSubmitButton);
-});
-
-// Render Cart
+// ------------------ Render Cart ------------------
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
     if(!cartItems) return;
@@ -136,11 +137,11 @@ function renderCart() {
     let totalAmount = 0;
 
     cart.forEach((item,index)=>{
-        totalAmount += item.price*item.qty;
+        totalAmount += Number(item.price)*Number(item.qty);
         cartItems.innerHTML += `<tr>
             <td><img src="${item.photo}" alt="${item.name}"></td>
             <td>${item.name} x ${item.qty}</td>
-            <td>₹${item.price*item.qty}</td>
+            <td>₹${Number(item.price)*Number(item.qty)}</td>
             <td><button class="remove" onclick="removeItem(${index})">Remove</button></td>
         </tr>`;
     });
@@ -151,24 +152,27 @@ function renderCart() {
     const orderDetails = document.getElementById('order_details');
     if(orderDetails){
         orderDetails.value = cart.length > 0 ?
-            cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
-            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}` :
+            cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n")+
+            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount + deliveryCharge}` :
             "Your cart is empty.";
     }
 
     updateSubmitButton();
 }
 
-// Remove Item
+// ------------------ Remove Item ------------------
 function removeItem(index){
     cart.splice(index,1);
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
 }
 
-// Form Submit
+// ------------------ Input Listeners ------------------
+[nameInput,addressInput].forEach(input => input.addEventListener("input", updateSubmitButton));
+
+// ------------------ Form Submit ------------------
 document.getElementById('orderForm')?.addEventListener('submit', function(e){
-    const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
+    const totalAmount = getTotalAmount();
     if(cart.length === 0 || totalAmount < 500){
         e.preventDefault();
         alert("Cart is empty or total amount less than ₹500!");
@@ -188,10 +192,10 @@ document.getElementById('orderForm')?.addEventListener('submit', function(e){
     },100);
 });
 
-// Initialize
+// ------------------ Initialize ------------------
 document.addEventListener("DOMContentLoaded", function(){
     renderCart();
-    updateSubmitButton(); // <-- ensures button active if conditions met on reload
+    updateSubmitButton(); // ensures correct button state on reload
 });
 </script>
 </body>

@@ -1,78 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OnlineBadganMall - Products</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OnlineBadganMall - Products</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.product { background: white; padding: 10px; margin: 10px; display: inline-block; width: 200px; vertical-align: top; border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.1); text-align: center; }
+.product img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+.product button { background: #4CAF50; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 5px; }
+button.qty-btn { width: 30px; height: 30px; font-size: 20px; border: 1px solid #ccc; background: #f0f0f0; cursor: pointer; border-radius: 4px; }
+.qty-input { width: 50px; text-align: center; margin: 0 5px; font-size: 16px; }
+.qty-container { display: flex; align-items: center; justify-content: center; margin: 5px 0; }
+.cart { position: fixed; top: 20px; right: 20px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 250px; }
+.cart ul { list-style-type: none; padding-left: 0; }
+@media(max-width: 768px) { .product { width: 45%; } .cart { width: 90%; top: auto; bottom: 20px; right: 5%; } }
+</style>
 </head>
 <body>
 
 <header>
-  <h1>Welcome to OnlineBadganMall</h1>
-  <p>Best Quality Grocery at your doorstep</p>
+    <h1>OnlineBadganMall - Products</h1>
+    <p>Home Delivery Available in Timmapur!</p>
 </header>
 
 <nav>
-  <a href="index.html">Products</a>
-  <a href="order.html">Place Order</a>
-  <a href="contact.html">Contact Us</a>
+    <a href="index.html">Products</a>
+    <a href="order.html">Place Order</a>
+    <a href="contact.html">Contact Us</a>
 </nav>
 
 <div class="container">
-  <!-- Rice -->
-  <div class="product">
-    <img src="Rice.jpg" alt="Rice">
-    <h3>Rice</h3>
-    <p>₹100 per kg</p>
-    <div class="qty-controls">
-      <button onclick="decreaseQty('qty-rice')">-</button>
-      <input type="number" id="qty-rice" value="1" min="1">
-      <button onclick="increaseQty('qty-rice')">+</button>
+    <!-- Product 1: Rice -->
+    <div class="product">
+        <img src="Rice.jpg" alt="Rice">
+        <h3>Rice</h3>
+        <p>₹100 per kg</p>
+        <div class="qty-container">
+            <button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button>
+            <input type="number" value="1" min="1" class="qty-input">
+            <button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button>
+        </div>
+        <button onclick="addProductToCart('Rice',100,'Rice.jpg', this)">Add to Cart</button>
     </div>
-    <button onclick="addToCart('Rice', 100, 'Rice.jpg', 'qty-rice')">Add to Cart</button>
-  </div>
 
-  <!-- Mung Dal -->
-  <div class="product">
-    <img src="MungDal.jpg" alt="Mung Dal">
-    <h3>Mung Dal</h3>
-    <p>₹200 per kg</p>
-    <div class="qty-controls">
-      <button onclick="decreaseQty('qty-mungdal')">-</button>
-      <input type="number" id="qty-mungdal" value="1" min="1">
-      <button onclick="increaseQty('qty-mungdal')">+</button>
+    <!-- Product 2: Mung Dal -->
+    <div class="product">
+        <img src="Mungdal.jpg" alt="Mung Dal">
+        <h3>Mung Dal</h3>
+        <p>₹200 per kg</p>
+        <div class="qty-container">
+            <button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button>
+            <input type="number" value="1" min="1" class="qty-input">
+            <button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button>
+        </div>
+        <button onclick="addProductToCart('Mung Dal',200,'Mungdal.jpg', this)">Add to Cart</button>
     </div>
-    <button onclick="addToCart('Mung Dal', 200, 'MungDal.jpg', 'qty-mungdal')">Add to Cart</button>
-  </div>
 
-  <!-- Tor Dal -->
-  <div class="product">
-    <img src="TorDal.jpg" alt="Tor Dal">
-    <h3>Tor Dal</h3>
-    <p>₹150 per kg</p>
-    <div class="qty-controls">
-      <button onclick="decreaseQty('qty-tordal')">-</button>
-      <input type="number" id="qty-tordal" value="1" min="1">
-      <button onclick="increaseQty('qty-tordal')">+</button>
+    <!-- Product 3: Tor Dal -->
+    <div class="product">
+        <img src="Tordal.jpg" alt="Tor Dal">
+        <h3>Tor Dal</h3>
+        <p>₹150 per kg</p>
+        <div class="qty-container">
+            <button type="button" class="qty-btn" onclick="changeQty(this,-1)">-</button>
+            <input type="number" value="1" min="1" class="qty-input">
+            <button type="button" class="qty-btn" onclick="changeQty(this,1)">+</button>
+        </div>
+        <button onclick="addProductToCart('Tor Dal',150,'Tordal.jpg', this)">Add to Cart</button>
     </div>
-    <button onclick="addToCart('Tor Dal', 150, 'TorDal.jpg', 'qty-tordal')">Add to Cart</button>
-  </div>
 </div>
 
-<!-- Cart Sidebar -->
-<div class="cart" id="cart">
-  <h3>Your Cart</h3>
-  <ul id="cart-items"></ul>
-  <p><strong>Total:</strong> ₹<span id="total">0</span></p>
-  <a href="order.html"><button>Go to Order Page</button></a>
+<div class="cart">
+    <h3>Cart</h3>
+    <ul id="cart-items"></ul>
+    <p>Total: ₹<span id="cart-total">0</span></p>
 </div>
-
-<footer>
-  <p>Contact: 9999999999 | Visit us in Timmapur</p>
-  <p>CEO: Mr. Mohammed Shafee</p>
-</footer>
 
 <script src="script.js"></script>
+<script>
+// Change quantity with plus/minus buttons
+function changeQty(button, delta) {
+    const input = button.parentElement.querySelector('.qty-input');
+    let val = parseInt(input.value) || 1;
+    val += delta;
+    if(val < 1) val = 1;
+    input.value = val;
+}
+
+// Add product to cart (calls script.js function)
+function addProductToCart(name, price, photo, button){
+    const qtyInput = button.parentElement.querySelector('.qty-input');
+    const qty = parseInt(qtyInput.value) || 1;
+    addToCart(name, price, photo, qty);
+}
+</script>
 </body>
 </html>

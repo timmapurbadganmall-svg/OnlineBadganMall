@@ -34,7 +34,7 @@ function renderCart() {
     cart.forEach((item,index)=>{
         totalAmount += Number(item.price)*Number(item.qty);
         cartItems.innerHTML += `<tr>
-            <td><img src="${item.photo}" alt="${item.name}"></td>
+            <td><img src="${item.photo}" alt="${item.name}" style="width:50px;height:50px;"></td>
             <td>${item.name} x ${item.qty}</td>
             <td>₹${Number(item.price)*Number(item.qty)}</td>
             <td><button class="remove" onclick="removeItem(${index})">Remove</button></td>
@@ -130,7 +130,16 @@ function markDelivered(index){
     displayOrders();
 }
 
+// ------------------ Initialize ------------------
 document.addEventListener("DOMContentLoaded", function(){
+    // Update all product image src to include folder path
+    document.querySelectorAll('.product img').forEach(img => {
+        if(!img.src.includes('images/')){
+            const filename = img.src.split('/').pop();
+            img.src = `images/${filename}`;
+        }
+    });
+
     renderCart();
     updateSubmitButton();
 });

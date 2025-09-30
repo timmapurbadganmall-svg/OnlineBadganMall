@@ -6,25 +6,11 @@
 <title>OnlineBadganMall - Place Order</title>
 <link rel="stylesheet" href="style.css">
 <style>
-    /* Quick styling for cart table */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 15px;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    img {
-        width: 60px;
-        height: auto;
-    }
-    button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
+table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+img { width: 60px; height: auto; border-radius: 5px; }
+button:disabled { background-color: #ccc; cursor: not-allowed; }
+.order-summary p { margin: 5px 0; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -51,70 +37,27 @@
                 <th>Remove</th>
             </tr>
         </thead>
-        <tbody id="cart-items">
-            <!-- JS will populate this -->
-        </tbody>
+        <tbody id="cart-items"></tbody>
     </table>
-    <p><strong>Total: ₹<span id="total">0</span></strong></p>
+
+    <div class="order-summary">
+        <p id="total-amount">Total Amount: ₹0</p>
+        <p id="delivery-charge">Delivery Charge: ₹10</p>
+        <p id="grand-total">Grand Total: ₹0</p>
+        <p id="min-order-warning" style="color:red; display:none; font-weight:bold;">
+            Minimum order ₹500 required
+        </p>
+    </div>
 
     <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
         <label>Name:</label>
         <input type="text" name="name" placeholder="Your Name" required>
-
-<style>
-.phone-container {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  padding: 5px;
-  border-radius: 8px;
-  width: 250px;
-}
-.phone-container span {
-  margin-right: 5px;
-  font-size: 18px;
-}
-.phone-container input {
-  border: none;
-  outline: none;
-  flex: 1;
-}
-</style>
-
-<label for="mobile">Mobile:</label>
-<div class="phone-container">
-  <span>🇮🇳 +91</span>
-  <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
-</div>
-
-<script>
-const mobileInput = document.getElementById("mobile");
-
-// Input par sirf digits aur max 10 allow karo
-mobileInput.addEventListener("input", function () {
-    let digits = this.value.replace(/\D/g, "");
-    if (digits.length > 10) {
-        digits = digits.substring(0, 10);
-    }
-    this.value = digits;
-});
-
-// Form submit par validation
-document.querySelector("form")?.addEventListener("submit", function (e) {
-    let digits = mobileInput.value.replace(/\D/g, "");
-    if (digits.length !== 10) {
-        e.preventDefault();
-        alert("Please enter a valid 10-digit mobile number");
-    }
-});
-</script>
-
+        <label>Mobile:</label>
+        <input type="tel" name="mobile" placeholder="Your mobile number" value="" required>
         <label>Address:</label>
         <textarea name="address" placeholder="Delivery Address in Timmapur" required></textarea>
-
         <label>Order Details:</label>
         <textarea name="order_details" readonly id="order_details"></textarea>
-
         <button type="submit" id="submitOrderBtn">Submit Order</button>
     </form>
 </div>

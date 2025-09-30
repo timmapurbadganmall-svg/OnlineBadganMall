@@ -5,24 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OnlineBadganMall - Products</title>
 <link rel="stylesheet" href="style.css">
-<style>
-    .product {
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin: 10px;
-        display: inline-block;
-        width: 200px;
-        vertical-align: top;
-        text-align: center;
-    }
-    .product img {
-        width: 100%;
-        height: auto;
-    }
-    input[type="number"] {
-        width: 50px;
-    }
-</style>
 </head>
 <body>
 
@@ -36,36 +18,47 @@
     <a href="contact.html">Contact Us</a>
 </nav>
 
-<div id="product-list">
-    <!-- Example Products -->
+<div class="container">
+    <h2>Enter Your Mobile Number</h2>
+    <form id="mobileForm">
+        <div class="phone-container">
+            <span>🇮🇳 +91</span>
+            <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
+        </div>
+        <button type="submit">Save Number</button>
+    </form>
+</div>
+
+<div class="container" id="product-list">
+    <!-- Product 1 -->
     <div class="product">
-        <img src="images/Rice.jpg" alt="Basmati Rice">
-        <h3>Basmati Rice</h3>
-        <p>Price: ₹100</p>
+        <img src="images/Rice.jpg" alt="Rice">
+        <h3>Rice</h3>
+        <p>Price: ₹100/kg</p>
         <label>Qty:</label>
-        <input type="number" value="1" min="1" id="qty-1">
-        <button onclick="addToCart('Basmati Rice', 100, 'images/Rice.jpg', document.getElementById('qty-1').value)">Add to Cart</button>
+        <input type="number" value="1" min="1" id="qty-rice">
+        <button onclick="addToCart('Rice',100,'images/Rice.jpg',document.getElementById('qty-rice').value)">Add to Cart</button>
     </div>
 
+    <!-- Product 2 -->
     <div class="product">
         <img src="images/Mungdal.jpg" alt="Mung Dal">
         <h3>Mung Dal</h3>
-        <p>Price: ₹200</p>
+        <p>Price: ₹200/kg</p>
         <label>Qty:</label>
-        <input type="number" value="1" min="1" id="qty-2">
-        <button onclick="addToCart('Mung Dal', 200, 'images/Mungdal.jpg', document.getElementById('qty-2').value)">Add to Cart</button>
+        <input type="number" value="1" min="1" id="qty-mungdal">
+        <button onclick="addToCart('Mung Dal',200,'images/Mungdal.jpg',document.getElementById('qty-mungdal').value)">Add to Cart</button>
     </div>
- <div class="product">
-        <img src="images/Tordal.jpg" alt="Mung Dal">
+
+    <!-- Product 3 -->
+    <div class="product">
+        <img src="images/Tordal.jpg" alt="Tor Dal">
         <h3>Tor Dal</h3>
-        <p>Price: ₹150</p>
+        <p>Price: ₹150/kg</p>
         <label>Qty:</label>
-        <input type="number" value="1" min="1" id="qty-2">
-        <button onclick="addToCart('Tor Dal', 150, 'images/Tordal.jpg', document.getElementById('qty-2').value)">Add to Cart</button>
+        <input type="number" value="1" min="1" id="qty-tordal">
+        <button onclick="addToCart('Tor Dal',150,'images/Tordal.jpg',document.getElementById('qty-tordal').value)">Add to Cart</button>
     </div>
-
-
-    <!-- Add more products similarly -->
 </div>
 
 <footer>
@@ -73,5 +66,30 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+const mobileInput = document.getElementById("mobile");
+
+if(mobileInput){
+    // Only digits max 10
+    mobileInput.addEventListener("input", function () {
+        let digits = this.value.replace(/\D/g, "");
+        if (digits.length > 10) digits = digits.substring(0, 10);
+        this.value = digits;
+    });
+
+    // Save mobile on form submit
+    document.getElementById("mobileForm")?.addEventListener("submit", function (e) {
+        let digits = mobileInput.value.replace(/\D/g, "");
+        if (digits.length !== 10) {
+            e.preventDefault();
+            alert("Please enter a valid 10-digit mobile number");
+        } else {
+            alert("Mobile number saved!");
+            localStorage.setItem("customerMobile", digits);
+        }
+    });
+}
+</script>
+
 </body>
 </html>

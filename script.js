@@ -8,7 +8,7 @@ cart = cart.map(item => ({...item, qty: item.qty ? Number(item.qty) : 1}));
 // Add to Cart
 function addToCart(name, price, photo, qty) {
     qty = Number(qty) || 1;
-    // If item exists, increase qty
+    // Check if product already in cart
     const existing = cart.find(i => i.name === name);
     if(existing) {
         existing.qty += qty;
@@ -31,7 +31,7 @@ function getTotalAmount() {
     return cart.reduce((sum,i)=> sum + (Number(i.price)*Number(i.qty)),0);
 }
 
-// Render cart in order.html
+// Render cart in order.html or cart sidebar
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
     if(!cartItems) return;
@@ -48,17 +48,20 @@ function renderCart() {
         </tr>`;
     });
 
-    // Update totals
     const deliveryCharge = 10;
-    document.getElementById('total-amount').innerText = `Total Amount: ₹${totalAmount}`;
-    document.getElementById('grand-total').innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
-    
-    // Update order details textarea
-    const orderDetails = document.getElementById('order_details');
-    if(orderDetails){
-        orderDetails.value = cart.length > 0 ?
+    const totalElem = document.getElementById('total-amount');
+    const grandTotalElem = document.getElementById('grand-total');
+    const orderDetailsElem = document.getElementById('order_details');
+    const cartTotalElem = document.getElementById('cart-total');
+
+    if(totalElem) totalElem.innerText = `Total Amount: ₹${totalAmount}`;
+    if(grandTotalElem) grandTotalElem.innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
+    if(cartTotalElem) cartTotalElem.innerText = totalAmount;
+
+    if(orderDetailsElem){
+        orderDetailsElem.value = cart.length > 0 ?
             cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n")+
-            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}` :
+            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount + deliveryCharge}` :
             "Your cart is empty.";
     }
 
@@ -82,7 +85,7 @@ function updateSubmitButton() {
 }
 
 // Listen to input changes
-[nameInput, addressInput].forEach(input => input?.addEventListener("input", updateSubmitButton));
+[nameInput,addressInput].forEach(input => input?.addEventListener("input", updateSubmitButton));
 
 // Mobile validation
 mobileInput?.addEventListener("input", ()=>{

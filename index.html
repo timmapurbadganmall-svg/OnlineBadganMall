@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OnlineBadganMall - Timmapur</title>
+<title>OnlineBadganMall - Products</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,9 +15,9 @@
 </header>
 
 <nav>
-    <a href="#products">Products</a>
-    <a href="#order">Place Order</a>
-    <a href="#contact">Contact Us</a>
+    <a href="index.html">Products</a>
+    <a href="order.html">Place Order</a>
+    <a href="contact.html">Contact Us</a>
 </nav>
 
 <div class="container" id="products">
@@ -28,7 +28,7 @@
         <button onclick="addToCart('Rice', 75)">Add to Cart</button>
     </div>
     <div class="product">
-	<img src="images/Mungdal.jpg" alt="Mung Dal" width="200" height="150">
+        <img src="images/Mungdal.jpg" alt="Mung Dal" width="200" height="150">
         <h3>Mung Dal - ₹80/kg</h3>
         <button onclick="addToCart('Mung Dal', 80)">Add to Cart</button>
     </div>
@@ -45,57 +45,7 @@
     <strong>Total: ₹<span id="total">0</span></strong>
 </div>
 
-<div class="order-form" id="order">
-    <h2>Place Your Order</h2>
-    <!-- Replace YOUR_FORM_ID with your Formspree ID -->
-    <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
-        <label>Name:</label>
-        <input type="text" name="name" placeholder="Your Name" required>
-<label for="mobile">Mobile:</label>
-<input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number" required>
-
-<script>
-const mobileInput = document.getElementById("mobile");
-
-// Default +91 prefix set
-mobileInput.value = "+91 ";
-
-// Input par check karo
-mobileInput.addEventListener("input", function () {
-    // Agar +91 se start nahi ho raha to fix karo
-    if (!this.value.startsWith("+91 ")) {
-        this.value = "+91 ";
-    }
-
-    // +91 ke baad sirf digits allow karo
-    this.value = this.value.replace(/[^+\d\s]/g, "");
-
-    // Extra characters (10 digits se zyada) ko cut karo
-    let digits = this.value.replace("+91 ", "").replace(/\D/g, "");
-    if (digits.length > 10) {
-        digits = digits.substring(0, 10);
-    }
-    this.value = "+91 " + digits;
-});
-
-// Form submit par 10 digit check karo
-document.querySelector("form")?.addEventListener("submit", function (e) {
-    let digits = mobileInput.value.replace("+91 ", "").replace(/\D/g, "");
-    if (digits.length !== 10) {
-        e.preventDefault();
-        alert("Please enter a valid 10-digit mobile number after +91");
-    }
-});
-</script>
-        <label>Address:</label>
-        <textarea name="address" placeholder="Delivery Address in Timmapur" required></textarea>
-        <label>Order Details:</label>
-        <textarea name="order_details" readonly id="order_details"></textarea>
-        <button type="submit">Submit Order</button>
-    </form>
-</div>
-
-<footer id="contact">
+<footer>
     <p>Contact: 9999999999 | Visit us in Timmapur</p>
     <p>CEO: Mr. Mohammed Shafee</p>
 </footer>

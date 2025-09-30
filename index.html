@@ -1,111 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OnlineBadganMall - Products</title>
-<link rel="stylesheet" href="style.css">
-<style>
-.product { background: white; padding: 10px; margin: 10px; display: inline-block; width: 200px; vertical-align: top; border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.1); text-align: center; }
-.product img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
-.product button { background: #4CAF50; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 5px; }
-.qty-container { display: flex; align-items: center; justify-content: center; margin: 5px 0; }
-.qty-btn { width: 40px; height: 40px; font-size: 22px; border: 1px solid #ccc; background: #f0f0f0; cursor: pointer; border-radius: 5px; }
-.qty-input { width: 50px; text-align: center; margin: 0 5px; font-size: 16px; }
-.cart { position: fixed; top: 20px; right: 20px; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 250px; }
-.cart ul { list-style-type: none; padding-left: 0; }
-@media(max-width: 768px) { .product { width: 45%; } .qty-btn { width: 45px; height: 45px; font-size: 24px; } .qty-input { width: 60px; font-size: 18px; } .cart { width: 90%; top: auto; bottom: 20px; right: 5%; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnlineBadganMall - Products</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-    <h1>OnlineBadganMall - Products</h1>
-    <p>Home Delivery Available in Timmapur!</p>
+  <h1>OnlineBadganMall</h1>
+  <p>Welcome to Timmapur’s Online Mall</p>
 </header>
 
 <nav>
-    <a href="index.html">Products</a>
-    <a href="order.html">Place Order</a>
-    <a href="contact.html">Contact Us</a>
+  <a href="index.html">Products</a>
+  <a href="order.html">Place Order</a>
+  <a href="contact.html">Contact Us</a>
 </nav>
 
 <div class="container">
-    <!-- Product 1 -->
-    <div class="product">
-        <img src="images/Rice.jpg" alt="Rice">
-        <h3>Rice</h3>
-        <p>₹100 per kg</p>
-        <div class="qty-container">
-            <button type="button" class="qty-btn minus">-</button>
-            <input type="number" value="1" min="1" class="qty-input">
-            <button type="button" class="qty-btn plus">+</button>
-        </div>
-        <button type="button" class="add-cart-btn">Add to Cart</button>
+  <!-- Product 1 -->
+  <div class="product">
+    <img src="Rice.jpg" alt="Rice">
+    <h3>Rice</h3>
+    <p>₹100 per kg</p>
+    <div class="qty-controls">
+      <button onclick="decreaseQty('qty-rice')">-</button>
+      <input type="number" id="qty-rice" value="1" min="1">
+      <button onclick="increaseQty('qty-rice')">+</button>
     </div>
+    <button onclick="addToCart('Rice', 100, 'Rice.jpg', 'qty-rice')">Add to Cart</button>
+  </div>
 
-    <!-- Product 2 -->
-    <div class="product">
-        <img src="images/Mungdal.jpg" alt="Mung Dal">
-        <h3>Mung Dal</h3>
-        <p>₹200 per kg</p>
-        <div class="qty-container">
-            <button type="button" class="qty-btn minus">-</button>
-            <input type="number" value="1" min="1" class="qty-input">
-            <button type="button" class="qty-btn plus">+</button>
-        </div>
-        <button type="button" class="add-cart-btn">Add to Cart</button>
+  <!-- Product 2 -->
+  <div class="product">
+    <img src="Mungdal.jpg" alt="Mung Dal">
+    <h3>Mung Dal</h3>
+    <p>₹200 per kg</p>
+    <div class="qty-controls">
+      <button onclick="decreaseQty('qty-mung')">-</button>
+      <input type="number" id="qty-mung" value="1" min="1">
+      <button onclick="increaseQty('qty-mung')">+</button>
     </div>
+    <button onclick="addToCart('Mung Dal', 200, 'Mungdal.jpg', 'qty-mung')">Add to Cart</button>
+  </div>
 
-    <!-- Product 3 -->
-    <div class="product">
-        <img src="images/Tordal.jpg" alt="Tor Dal">
-        <h3>Tor Dal</h3>
-        <p>₹150 per kg</p>
-        <div class="qty-container">
-            <button type="button" class="qty-btn minus">-</button>
-            <input type="number" value="1" min="1" class="qty-input">
-            <button type="button" class="qty-btn plus">+</button>
-        </div>
-        <button type="button" class="add-cart-btn">Add to Cart</button>
+  <!-- Product 3 -->
+  <div class="product">
+    <img src="Tordal.jpg" alt="Tor Dal">
+    <h3>Tor Dal</h3>
+    <p>₹150 per kg</p>
+    <div class="qty-controls">
+      <button onclick="decreaseQty('qty-tor')">-</button>
+      <input type="number" id="qty-tor" value="1" min="1">
+      <button onclick="increaseQty('qty-tor')">+</button>
     </div>
+    <button onclick="addToCart('Tor Dal', 150, 'Tordal.jpg', 'qty-tor')">Add to Cart</button>
+  </div>
 </div>
 
+<!-- CART SIDEBAR -->
 <div class="cart">
-    <h3>Cart</h3>
-    <ul id="cart-items"></ul>
-    <p>Total: ₹<span id="cart-total">0</span></p>
+  <h3>Your Cart</h3>
+  <ul id="cart-items"></ul>
+  <p><strong>Total: ₹<span id="total">0</span></strong></p>
+  <a href="order.html"><button>Place Order</button></a>
 </div>
+
+<footer>
+  <p>Contact: 9999999999 | Timmapur</p>
+</footer>
 
 <script src="script.js"></script>
-<script>
-// Qty buttons + Add to Cart functionality
-document.querySelectorAll('.product').forEach(product => {
-    const minusBtn = product.querySelector('.qty-btn.minus');
-    const plusBtn = product.querySelector('.qty-btn.plus');
-    const input = product.querySelector('.qty-input');
-    const addBtn = product.querySelector('.add-cart-btn');
-
-    minusBtn.addEventListener('click', () => {
-        let val = parseInt(input.value) || 1;
-        input.value = Math.max(1, val - 1);
-    });
-
-    plusBtn.addEventListener('click', () => {
-        let val = parseInt(input.value) || 1;
-        input.value = val + 1;
-    });
-
-    addBtn.addEventListener('click', () => {
-        const name = product.querySelector('h3').innerText;
-        const priceText = product.querySelector('p').innerText;
-        const price = parseInt(priceText.replace(/\D/g,''));
-        const photo = product.querySelector('img').src;
-        const qty = parseInt(input.value) || 1;
-
-        addToCart(name, price, photo, qty);
-    });
-});
-</script>
 </body>
 </html>

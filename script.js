@@ -1,14 +1,10 @@
 // ------------------ Cart Initialization ------------------
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-// Ensure qty exists and numeric
 cart = cart.map(item => ({...item, qty: item.qty ? Number(item.qty) : 1}));
 
 // ------------------ Customer Side ------------------
-
-// Add to Cart
 function addToCart(name, price, photo, qty) {
     qty = Number(qty) || 1;
-    // Check if product already in cart
     const existing = cart.find(i => i.name === name);
     if(existing) {
         existing.qty += qty;
@@ -19,19 +15,16 @@ function addToCart(name, price, photo, qty) {
     renderCart();
 }
 
-// Remove item from cart
 function removeItem(index){
     cart.splice(index,1);
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
 }
 
-// Get total amount
 function getTotalAmount() {
     return cart.reduce((sum,i)=> sum + (Number(i.price)*Number(i.qty)),0);
 }
 
-// Render cart in order.html or cart sidebar
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
     if(!cartItems) return;
@@ -49,15 +42,11 @@ function renderCart() {
     });
 
     const deliveryCharge = 10;
-    const totalElem = document.getElementById('total-amount');
-    const grandTotalElem = document.getElementById('grand-total');
+    document.getElementById('total-amount')?.innerText = `Total Amount: ₹${totalAmount}`;
+    document.getElementById('grand-total')?.innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
+    document.getElementById('cart-total')?.innerText = totalAmount;
+
     const orderDetailsElem = document.getElementById('order_details');
-    const cartTotalElem = document.getElementById('cart-total');
-
-    if(totalElem) totalElem.innerText = `Total Amount: ₹${totalAmount}`;
-    if(grandTotalElem) grandTotalElem.innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
-    if(cartTotalElem) cartTotalElem.innerText = totalAmount;
-
     if(orderDetailsElem){
         orderDetailsElem.value = cart.length > 0 ?
             cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n")+
@@ -84,16 +73,13 @@ function updateSubmitButton() {
     if(submitBtn) submitBtn.disabled = !(totalAmount >= 500 && name !== "" && address !== "");
 }
 
-// Listen to input changes
 [nameInput,addressInput].forEach(input => input?.addEventListener("input", updateSubmitButton));
 
-// Mobile validation
 mobileInput?.addEventListener("input", ()=>{
     let digits = mobileInput.value.replace(/\D/g,'').substring(0,10);
     mobileInput.value = digits;
 });
 
-// ------------------ Form Submit ------------------
 document.getElementById('orderForm')?.addEventListener('submit', function(e){
     const totalAmount = getTotalAmount();
     if(cart.length === 0 || totalAmount < 500){
@@ -144,7 +130,6 @@ function markDelivered(index){
     displayOrders();
 }
 
-// ------------------ Initialize ------------------
 document.addEventListener("DOMContentLoaded", function(){
     renderCart();
     updateSubmitButton();

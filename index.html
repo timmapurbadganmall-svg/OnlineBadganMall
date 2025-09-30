@@ -31,7 +31,7 @@
 </nav>
 
 <div class="container">
-    <!-- Product 1: Rice -->
+    <!-- Product 1 -->
     <div class="product">
         <img src="images/Rice.jpg" alt="Rice">
         <h3>Rice</h3>
@@ -44,7 +44,7 @@
         <button type="button" class="add-cart-btn">Add to Cart</button>
     </div>
 
-    <!-- Product 2: Mung Dal -->
+    <!-- Product 2 -->
     <div class="product">
         <img src="images/Mungdal.jpg" alt="Mung Dal">
         <h3>Mung Dal</h3>
@@ -57,7 +57,7 @@
         <button type="button" class="add-cart-btn">Add to Cart</button>
     </div>
 
-    <!-- Product 3: Tor Dal -->
+    <!-- Product 3 -->
     <div class="product">
         <img src="images/Tordal.jpg" alt="Tor Dal">
         <h3>Tor Dal</h3>
@@ -79,7 +79,7 @@
 
 <script src="script.js"></script>
 <script>
-// Initialize plus/minus buttons and Add to Cart for all products
+// Qty buttons + Add to Cart functionality
 document.querySelectorAll('.product').forEach(product => {
     const minusBtn = product.querySelector('.qty-btn.minus');
     const plusBtn = product.querySelector('.qty-btn.plus');
@@ -98,7 +98,7 @@ document.querySelectorAll('.product').forEach(product => {
 
     addBtn.addEventListener('click', () => {
         const name = product.querySelector('h3').innerText;
-        const priceText = product.querySelector('p').innerText; // e.g. "₹100 per kg"
+        const priceText = product.querySelector('p').innerText;
         const price = parseInt(priceText.replace(/\D/g,''));
         const photo = product.querySelector('img').src;
         const qty = parseInt(input.value) || 1;

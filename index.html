@@ -18,17 +18,6 @@
     <a href="contact.html">Contact Us</a>
 </nav>
 
-<div class="container">
-    <h2>Enter Your Mobile Number</h2>
-    <form id="mobileForm">
-        <div class="phone-container">
-            <span>🇮🇳 +91</span>
-            <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
-        </div>
-        <button type="submit">Save Number</button>
-    </form>
-</div>
-
 <div class="container" id="product-list">
     <!-- Product 1 -->
     <div class="product">
@@ -66,30 +55,5 @@
 </footer>
 
 <script src="script.js"></script>
-<script>
-const mobileInput = document.getElementById("mobile");
-
-if(mobileInput){
-    // Only digits max 10
-    mobileInput.addEventListener("input", function () {
-        let digits = this.value.replace(/\D/g, "");
-        if (digits.length > 10) digits = digits.substring(0, 10);
-        this.value = digits;
-    });
-
-    // Save mobile on form submit
-    document.getElementById("mobileForm")?.addEventListener("submit", function (e) {
-        let digits = mobileInput.value.replace(/\D/g, "");
-        if (digits.length !== 10) {
-            e.preventDefault();
-            alert("Please enter a valid 10-digit mobile number");
-        } else {
-            alert("Mobile number saved!");
-            localStorage.setItem("customerMobile", digits);
-        }
-    });
-}
-</script>
-
 </body>
 </html>

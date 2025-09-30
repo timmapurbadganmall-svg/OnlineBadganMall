@@ -1,21 +1,41 @@
+// ------------------ Cart Management ------------------
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 const deliveryCharge = 10;
 
-function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); }
+// Save cart to localStorage
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
 
-function addToCart(name, price, photo, qty){
+// Add item to cart
+function addToCart(name, price, photo, qty) {
     qty = parseInt(qty) || 1;
-    const index = cart.findIndex(item=>item.name===name);
-    if(index >= 0){ cart[index].qty += qty; }
-    else { cart.push({name, price, photo, qty}); }
-    saveCart(); alert(`${name} added to cart!`);
+    const index = cart.findIndex(item => item.name === name);
+    if (index >= 0) {
+        cart[index].qty += qty;
+    } else {
+        cart.push({name, price, photo, qty});
+    }
+    saveCart();
+    alert(`${name} added to cart!`);
     renderCart();
 }
 
-function renderCart(){
-    const cartItems = document.getElementById('cart-items'); if(!cartItems) return;
-    cartItems.innerHTML = ''; let totalAmount = 0;
-    cart.forEach((item,index)=>{
+// Remove item from cart
+function removeItem(index) {
+    cart.splice(index, 1);
+    saveCart();
+    renderCart();
+}
+
+// Render cart table and totals
+function renderCart() {
+    const cartItems = document.getElementById('cart-items');
+    if (!cartItems) return;
+    cartItems.innerHTML = '';
+    let totalAmount = 0;
+
+    cart.forEach((item, index) => {
         totalAmount += item.price * item.qty;
         cartItems.innerHTML += `<tr>
             <td><img src="${item.photo}" alt="${item.name}"></td>
@@ -25,43 +45,78 @@ function renderCart(){
         </tr>`;
     });
 
-    document.getElementById('total-amount').innerText = `Total Amount: ₹${totalAmount}`;
-    document.getElementById('delivery-charge').innerText = `Delivery Charge: ₹${deliveryCharge}`;
-    document.getElementById('grand-total').innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
+    const totalEl = document.getElementById('total-amount');
+    const grandTotalEl = document.getElementById('grand-total');
+    const minOrderWarning = document.getElementById('min-order-warning');
 
-    const warning = document.getElementById('min-order-warning');
+    totalEl.innerText = `Total Amount: ₹${totalAmount}`;
+    grandTotalEl.innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
+
+    // Update order details textarea
+    const orderDetailsEl = document.getElementById('order_details');
+    if(orderDetailsEl) {
+        if(cart.length > 0){
+            orderDetailsEl.value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
+                `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}`;
+        } else {
+            orderDetailsEl.value = "Your cart is empty.";
+        }
+    }
+
+    // Update Submit button state
+    const nameInput = document.getElementById('name');
+    const addressInput = document.getElementById('address');
     const submitBtn = document.getElementById('submitOrderBtn');
-    if(totalAmount < 500){ warning.style.display='block'; if(submitBtn) submitBtn.disabled=true; }
-    else { warning.style.display='none'; if(submitBtn) submitBtn.disabled=false; }
 
-    const orderDetails = document.getElementById('order_details');
-    if(orderDetails){
-        if(cart.length>0){
-            orderDetails.value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
-            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}`;
-        } else { orderDetails.value="Your cart is empty."; }
+    if(totalAmount < 500){
+        minOrderWarning.style.display = 'block';
+    } else {
+        minOrderWarning.style.display = 'none';
+    }
+
+    if(submitBtn){
+        if(totalAmount >= 500 && nameInput.value.trim() !== "" && addressInput.value.trim() !== ""){
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
     }
 }
 
-function removeItem(index){ cart.splice(index,1); saveCart(); renderCart(); }
-
+// ------------------ Form Submission ------------------
 const orderForm = document.getElementById('orderForm');
 if(orderForm){
-    orderForm.addEventListener('submit',function(event){
-        const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
-        if(cart.length===0 || totalAmount<500){ event.preventDefault(); alert("Cart is empty or total amount less than ₹500!"); return; }
-        const orderDetailsText = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
-                                 `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}`;
-        const orderDetails = document.getElementById('order_details');
-        if(orderDetails) orderDetails.value = orderDetailsText;
-        setTimeout(()=>{ cart=[]; saveCart(); renderCart(); alert("Order submitted! You will receive confirmation email."); },100);
+    orderForm.addEventListener('submit', function(event){
+        const totalAmount = cart.reduce((sum, i)=>sum + i.price*i.qty, 0);
+        if(cart.length === 0 || totalAmount < 500){
+            event.preventDefault();
+            alert("Cart is empty or total amount less than ₹500!");
+            return;
+        }
+
+        const mobileInput = document.getElementById('mobile');
+        const digits = mobileInput.value.replace(/\D/g,'');
+        if(digits.length !== 10){
+            event.preventDefault();
+            alert("Please enter a valid 10-digit mobile number");
+            return;
+        }
+
+        // Clear cart after short delay to ensure form submits
+        setTimeout(()=>{
+            cart = [];
+            saveCart();
+            renderCart();
+            alert("Order submitted! You will receive confirmation email.");
+        }, 100);
     });
 }
 
-// ------------------ Admin Side ------------------
+// ------------------ Admin Panel ------------------
 function displayOrders(){
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const ordersUl = document.getElementById('orders'); if(!ordersUl) return;
+    const ordersUl = document.getElementById('orders'); 
+    if(!ordersUl) return;
     ordersUl.innerHTML = '';
     orders.forEach((order,index)=>{
         let li=document.createElement('li');
@@ -82,5 +137,5 @@ function markDelivered(index){
     displayOrders();
 }
 
-// Initialize cart on page load
+// ------------------ Initialize ------------------
 document.addEventListener("DOMContentLoaded", renderCart);

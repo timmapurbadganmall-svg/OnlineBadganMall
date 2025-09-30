@@ -71,7 +71,7 @@ button:disabled { background-color: #ccc; cursor: not-allowed; }
 
     <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
         <label for="name">Name:</label>
-        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="text" id="name" name="name" placeholder="Your Name" required>
 
         <label for="mobile">Mobile:</label>
         <div class="phone-container">
@@ -80,12 +80,12 @@ button:disabled { background-color: #ccc; cursor: not-allowed; }
         </div>
 
         <label>Address:</label>
-        <textarea name="address" placeholder="Delivery Address in Timmapur" required></textarea>
+        <textarea id="address" name="address" placeholder="Delivery Address in Timmapur" required></textarea>
 
         <label>Order Details:</label>
         <textarea name="order_details" readonly id="order_details"></textarea>
 
-        <button type="submit" id="submitOrderBtn">Submit Order</button>
+        <button type="submit" id="submitOrderBtn" disabled>Submit Order</button>
     </form>
 </div>
 
@@ -98,23 +98,46 @@ button:disabled { background-color: #ccc; cursor: not-allowed; }
 <script>
 // ------------------ Mobile Input Validation ------------------
 const mobileInput = document.getElementById("mobile");
+const nameInput = document.getElementById("name");
+const addressInput = document.getElementById("address");
+const submitBtn = document.getElementById("submitOrderBtn");
+const minOrderWarning = document.getElementById("min-order-warning");
+const totalAmountEl = document.getElementById("total-amount");
+const deliveryCharge = 10;
 
-// Input me sirf digits aur max 10
-mobileInput.addEventListener("input", function () {
-    let digits = this.value.replace(/\D/g, "");
-    if (digits.length > 10) digits = digits.substring(0, 10);
-    this.value = digits;
+// Mobile: only digits, max 10
+mobileInput.addEventListener("input", () => {
+    let digits = mobileInput.value.replace(/\D/g, "").substring(0, 10);
+    mobileInput.value = digits;
+});
+
+// Enable/disable submit button based on cart & form fields
+function updateSubmitButton(totalAmount){
+    if(totalAmount >= 500 && nameInput.value.trim() !== "" && addressInput.value.trim() !== ""){
+        submitBtn.disabled = false;
+        minOrderWarning.style.display = "none";
+    } else {
+        submitBtn.disabled = true;
+        if(totalAmount < 500) minOrderWarning.style.display = "block";
+    }
+}
+
+// Watch Name & Address inputs
+[nameInput, addressInput].forEach(input=>{
+    input.addEventListener("input", ()=>{
+        const totalAmount = parseInt(totalAmountEl.innerText.replace(/\D/g,'')) || 0;
+        updateSubmitButton(totalAmount);
+    });
 });
 
 // Form submit validation
-document.getElementById("orderForm")?.addEventListener("submit", function (e) {
-    let digits = mobileInput.value.replace(/\D/g, "");
-    if (digits.length !== 10) {
+document.getElementById("orderForm")?.addEventListener("submit", function(e){
+    const digits = mobileInput.value.replace(/\D/g,'');
+    if(digits.length !== 10){
         e.preventDefault();
         alert("Please enter a valid 10-digit mobile number");
     }
 });
 </script>
-
 </body>
 </html>

@@ -102,7 +102,6 @@ const nameInput = document.getElementById("name");
 const addressInput = document.getElementById("address");
 const submitBtn = document.getElementById("submitOrderBtn");
 const minOrderWarning = document.getElementById("min-order-warning");
-const totalAmountEl = document.getElementById("total-amount");
 const deliveryCharge = 10;
 
 // Mobile: only digits, max 10
@@ -111,9 +110,10 @@ mobileInput.addEventListener("input", () => {
     mobileInput.value = digits;
 });
 
-// Enable/disable submit button based on cart & form fields
-function updateSubmitButton(totalAmount){
-    if(totalAmount >= 500 && nameInput.value.trim() !== "" && addressInput.value.trim() !== ""){
+// Function to enable/disable submit button
+function updateSubmitButton() {
+    const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
+    if(totalAmount >= 500 && nameInput.value.trim() !== "" && addressInput.value.trim() !== "") {
         submitBtn.disabled = false;
         minOrderWarning.style.display = "none";
     } else {
@@ -122,22 +122,74 @@ function updateSubmitButton(totalAmount){
     }
 }
 
-// Watch Name & Address inputs
+// Listen to Name & Address input changes
 [nameInput, addressInput].forEach(input=>{
-    input.addEventListener("input", ()=>{
-        const totalAmount = parseInt(totalAmountEl.innerText.replace(/\D/g,'')) || 0;
-        updateSubmitButton(totalAmount);
-    });
+    input.addEventListener("input", updateSubmitButton);
 });
 
-// Form submit validation
-document.getElementById("orderForm")?.addEventListener("submit", function(e){
+// Call after cart render
+function renderCart() {
+    const cartItems = document.getElementById('cart-items');
+    if(!cartItems) return;
+    cartItems.innerHTML = '';
+    let totalAmount = 0;
+
+    cart.forEach((item,index)=>{
+        totalAmount += item.price*item.qty;
+        cartItems.innerHTML += `<tr>
+            <td><img src="${item.photo}" alt="${item.name}"></td>
+            <td>${item.name} x ${item.qty}</td>
+            <td>₹${item.price*item.qty}</td>
+            <td><button class="remove" onclick="removeItem(${index})">Remove</button></td>
+        </tr>`;
+    });
+
+    document.getElementById('total-amount').innerText = `Total Amount: ₹${totalAmount}`;
+    document.getElementById('grand-total').innerText = `Grand Total: ₹${totalAmount+deliveryCharge}`;
+
+    const orderDetails = document.getElementById('order_details');
+    if(orderDetails){
+        if(cart.length>0){
+            orderDetails.value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n")+
+                `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}`;
+        } else orderDetails.value = "Your cart is empty.";
+    }
+
+    updateSubmitButton();
+}
+
+// ------------------ Remove Item ------------------
+function removeItem(index){
+    cart.splice(index,1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
+}
+
+// ------------------ Form Submit ------------------
+document.getElementById('orderForm')?.addEventListener('submit', function(e){
+    const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
+    if(cart.length === 0 || totalAmount < 500){
+        e.preventDefault();
+        alert("Cart is empty or total amount less than ₹500!");
+        return;
+    }
     const digits = mobileInput.value.replace(/\D/g,'');
     if(digits.length !== 10){
         e.preventDefault();
         alert("Please enter a valid 10-digit mobile number");
+        return;
     }
+    setTimeout(()=>{
+        cart = [];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        alert("Order submitted! You will receive confirmation email.");
+    },100);
 });
+
+// Initialize cart
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+document.addEventListener("DOMContentLoaded", renderCart);
 </script>
 </body>
 </html>

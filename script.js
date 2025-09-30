@@ -1,131 +1,135 @@
-// ------------------ Cart Management ------------------
+// ------------------ Cart Initialization ------------------
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-const deliveryCharge = 10;
+// Ensure qty exists and numeric
+cart = cart.map(item => ({...item, qty: item.qty ? Number(item.qty) : 1}));
 
-// Save cart to localStorage
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
+// ------------------ Customer Side ------------------
 
-// Add item to cart
+// Add to Cart
 function addToCart(name, price, photo, qty) {
-    qty = parseInt(qty) || 1;
-    const index = cart.findIndex(item => item.name === name);
-    if (index >= 0) {
-        cart[index].qty += qty;
+    qty = Number(qty) || 1;
+    // If item exists, increase qty
+    const existing = cart.find(i => i.name === name);
+    if(existing) {
+        existing.qty += qty;
     } else {
-        cart.push({name, price, photo, qty});
+        cart.push({name, price: Number(price), photo, qty});
     }
-    saveCart();
-    alert(`${name} added to cart!`);
+    localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
 }
 
 // Remove item from cart
-function removeItem(index) {
-    cart.splice(index, 1);
-    saveCart();
+function removeItem(index){
+    cart.splice(index,1);
+    localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
 }
 
-// Render cart table and totals
+// Get total amount
+function getTotalAmount() {
+    return cart.reduce((sum,i)=> sum + (Number(i.price)*Number(i.qty)),0);
+}
+
+// Render cart in order.html
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
-    if (!cartItems) return;
+    if(!cartItems) return;
     cartItems.innerHTML = '';
     let totalAmount = 0;
 
-    cart.forEach((item, index) => {
-        totalAmount += item.price * item.qty;
+    cart.forEach((item,index)=>{
+        totalAmount += Number(item.price)*Number(item.qty);
         cartItems.innerHTML += `<tr>
             <td><img src="${item.photo}" alt="${item.name}"></td>
             <td>${item.name} x ${item.qty}</td>
-            <td>₹${item.price * item.qty}</td>
+            <td>₹${Number(item.price)*Number(item.qty)}</td>
             <td><button class="remove" onclick="removeItem(${index})">Remove</button></td>
         </tr>`;
     });
 
-    const totalEl = document.getElementById('total-amount');
-    const grandTotalEl = document.getElementById('grand-total');
-    const minOrderWarning = document.getElementById('min-order-warning');
-
-    totalEl.innerText = `Total Amount: ₹${totalAmount}`;
-    grandTotalEl.innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
-
+    // Update totals
+    const deliveryCharge = 10;
+    document.getElementById('total-amount').innerText = `Total Amount: ₹${totalAmount}`;
+    document.getElementById('grand-total').innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
+    
     // Update order details textarea
-    const orderDetailsEl = document.getElementById('order_details');
-    if(orderDetailsEl) {
-        if(cart.length > 0){
-            orderDetailsEl.value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
-                `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}`;
-        } else {
-            orderDetailsEl.value = "Your cart is empty.";
-        }
+    const orderDetails = document.getElementById('order_details');
+    if(orderDetails){
+        orderDetails.value = cart.length > 0 ?
+            cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n")+
+            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}` :
+            "Your cart is empty.";
     }
 
-    // Update Submit button state
-    const nameInput = document.getElementById('name');
-    const addressInput = document.getElementById('address');
-    const submitBtn = document.getElementById('submitOrderBtn');
-
-    if(totalAmount < 500){
-        minOrderWarning.style.display = 'block';
-    } else {
-        minOrderWarning.style.display = 'none';
-    }
-
-    if(submitBtn){
-        if(totalAmount >= 500 && nameInput.value.trim() !== "" && addressInput.value.trim() !== ""){
-            submitBtn.disabled = false;
-        } else {
-            submitBtn.disabled = true;
-        }
-    }
+    updateSubmitButton();
 }
 
-// ------------------ Form Submission ------------------
-const orderForm = document.getElementById('orderForm');
-if(orderForm){
-    orderForm.addEventListener('submit', function(event){
-        const totalAmount = cart.reduce((sum, i)=>sum + i.price*i.qty, 0);
-        if(cart.length === 0 || totalAmount < 500){
-            event.preventDefault();
-            alert("Cart is empty or total amount less than ₹500!");
-            return;
-        }
+// ------------------ Submit Button Logic ------------------
+const nameInput = document.getElementById("name");
+const addressInput = document.getElementById("address");
+const mobileInput = document.getElementById("mobile");
+const submitBtn = document.getElementById("submitOrderBtn");
+const minOrderWarning = document.getElementById("min-order-warning");
 
-        const mobileInput = document.getElementById('mobile');
-        const digits = mobileInput.value.replace(/\D/g,'');
-        if(digits.length !== 10){
-            event.preventDefault();
-            alert("Please enter a valid 10-digit mobile number");
-            return;
-        }
+function updateSubmitButton() {
+    const totalAmount = getTotalAmount();
+    const name = nameInput?.value.trim() || "";
+    const address = addressInput?.value.trim() || "";
 
-        // Clear cart after short delay to ensure form submits
-        setTimeout(()=>{
-            cart = [];
-            saveCart();
-            renderCart();
-            alert("Order submitted! You will receive confirmation email.");
-        }, 100);
-    });
+    if(minOrderWarning) minOrderWarning.style.display = (totalAmount < 500) ? 'block' : 'none';
+    if(submitBtn) submitBtn.disabled = !(totalAmount >= 500 && name !== "" && address !== "");
 }
 
-// ------------------ Admin Panel ------------------
+// Listen to input changes
+[nameInput, addressInput].forEach(input => input?.addEventListener("input", updateSubmitButton));
+
+// Mobile validation
+mobileInput?.addEventListener("input", ()=>{
+    let digits = mobileInput.value.replace(/\D/g,'').substring(0,10);
+    mobileInput.value = digits;
+});
+
+// ------------------ Form Submit ------------------
+document.getElementById('orderForm')?.addEventListener('submit', function(e){
+    const totalAmount = getTotalAmount();
+    if(cart.length === 0 || totalAmount < 500){
+        e.preventDefault();
+        alert("Cart is empty or total amount less than ₹500!");
+        return;
+    }
+    const digits = mobileInput.value.replace(/\D/g,'');
+    if(digits.length !== 10){
+        e.preventDefault();
+        alert("Please enter a valid 10-digit mobile number");
+        return;
+    }
+    setTimeout(()=>{
+        cart = [];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        alert("Order submitted! You will receive confirmation email.");
+    },100);
+});
+
+// ------------------ Admin Side ------------------
 function displayOrders(){
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const ordersUl = document.getElementById('orders'); 
+    const ordersUl = document.getElementById('orders');
     if(!ordersUl) return;
     ordersUl.innerHTML = '';
+
     orders.forEach((order,index)=>{
-        let li=document.createElement('li');
-        li.innerHTML = `<strong>${order.name}</strong> - ${order.phone}<br>
-                        ${order.address}<br>
-                        Items: ${order.items.map(i=>i.name+" ₹"+i.price).join(", ")}<br>
-                        Total: ₹${order.total} <br>
-                        Delivered: ${order.delivered ? 'Yes' : 'No'} 
-                        <button onclick="markDelivered(${index})">Mark Delivered</button><hr>`;
+        let li = document.createElement('li');
+        li.innerHTML = `
+        <strong>${order.name}</strong> - ${order.phone}<br>
+        ${order.address}<br>
+        Items: ${order.items.map(i=>i.name+" ₹"+i.price).join(", ")}<br>
+        Total: ₹${order.total} <br>
+        Delivered: ${order.delivered ? 'Yes' : 'No'} 
+        <button onclick="markDelivered(${index})">Mark Delivered</button>
+        <hr>
+        `;
         ordersUl.appendChild(li);
     });
 }
@@ -138,4 +142,7 @@ function markDelivered(index){
 }
 
 // ------------------ Initialize ------------------
-document.addEventListener("DOMContentLoaded", renderCart);
+document.addEventListener("DOMContentLoaded", function(){
+    renderCart();
+    updateSubmitButton();
+});

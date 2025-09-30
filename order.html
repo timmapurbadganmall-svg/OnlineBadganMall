@@ -61,8 +61,53 @@
         <label>Name:</label>
         <input type="text" name="name" placeholder="Your Name" required>
 
-        <label for="mobile">Mobile:</label>
-        <input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number" required>
+<style>
+.phone-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 8px;
+  width: 250px;
+}
+.phone-container span {
+  margin-right: 5px;
+  font-size: 18px;
+}
+.phone-container input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+</style>
+
+<label for="mobile">Mobile:</label>
+<div class="phone-container">
+  <span>🇮🇳 +91</span>
+  <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit number" required>
+</div>
+
+<script>
+const mobileInput = document.getElementById("mobile");
+
+// Input par sirf digits aur max 10 allow karo
+mobileInput.addEventListener("input", function () {
+    let digits = this.value.replace(/\D/g, "");
+    if (digits.length > 10) {
+        digits = digits.substring(0, 10);
+    }
+    this.value = digits;
+});
+
+// Form submit par validation
+document.querySelector("form")?.addEventListener("submit", function (e) {
+    let digits = mobileInput.value.replace(/\D/g, "");
+    if (digits.length !== 10) {
+        e.preventDefault();
+        alert("Please enter a valid 10-digit mobile number");
+    }
+});
+</script>
 
         <label>Address:</label>
         <textarea name="address" placeholder="Delivery Address in Timmapur" required></textarea>

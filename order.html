@@ -104,22 +104,23 @@ const submitBtn = document.getElementById("submitOrderBtn");
 const minOrderWarning = document.getElementById("min-order-warning");
 const deliveryCharge = 10;
 
+// Load cart from localStorage
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
 // Mobile: only digits, max 10
 mobileInput.addEventListener("input", () => {
     let digits = mobileInput.value.replace(/\D/g, "").substring(0, 10);
     mobileInput.value = digits;
 });
 
-// Function to enable/disable submit button
+// Enable/disable submit button based on all conditions
 function updateSubmitButton() {
     const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
-    if(totalAmount >= 500 && nameInput.value.trim() !== "" && addressInput.value.trim() !== "") {
-        submitBtn.disabled = false;
-        minOrderWarning.style.display = "none";
-    } else {
-        submitBtn.disabled = true;
-        if(totalAmount < 500) minOrderWarning.style.display = "block";
-    }
+    const name = nameInput.value.trim();
+    const address = addressInput.value.trim();
+
+    minOrderWarning.style.display = (totalAmount < 500) ? 'block' : 'none';
+    submitBtn.disabled = !(totalAmount >= 500 && name !== "" && address !== "");
 }
 
 // Listen to Name & Address input changes
@@ -127,7 +128,7 @@ function updateSubmitButton() {
     input.addEventListener("input", updateSubmitButton);
 });
 
-// Call after cart render
+// Render Cart
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
     if(!cartItems) return;
@@ -145,27 +146,27 @@ function renderCart() {
     });
 
     document.getElementById('total-amount').innerText = `Total Amount: ₹${totalAmount}`;
-    document.getElementById('grand-total').innerText = `Grand Total: ₹${totalAmount+deliveryCharge}`;
+    document.getElementById('grand-total').innerText = `Grand Total: ₹${totalAmount + deliveryCharge}`;
 
     const orderDetails = document.getElementById('order_details');
     if(orderDetails){
-        if(cart.length>0){
-            orderDetails.value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n")+
-                `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}`;
-        } else orderDetails.value = "Your cart is empty.";
+        orderDetails.value = cart.length > 0 ?
+            cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price*i.qty}`).join("\n") +
+            `\nTotal Amount: ₹${totalAmount}\nDelivery Charge: ₹${deliveryCharge}\nGrand Total: ₹${totalAmount+deliveryCharge}` :
+            "Your cart is empty.";
     }
 
     updateSubmitButton();
 }
 
-// ------------------ Remove Item ------------------
+// Remove Item
 function removeItem(index){
     cart.splice(index,1);
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
 }
 
-// ------------------ Form Submit ------------------
+// Form Submit
 document.getElementById('orderForm')?.addEventListener('submit', function(e){
     const totalAmount = cart.reduce((sum,i)=>sum + i.price*i.qty,0);
     if(cart.length === 0 || totalAmount < 500){
@@ -187,9 +188,11 @@ document.getElementById('orderForm')?.addEventListener('submit', function(e){
     },100);
 });
 
-// Initialize cart
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-document.addEventListener("DOMContentLoaded", renderCart);
+// Initialize
+document.addEventListener("DOMContentLoaded", function(){
+    renderCart();
+    updateSubmitButton(); // <-- ensures button active if conditions met on reload
+});
 </script>
 </body>
 </html>

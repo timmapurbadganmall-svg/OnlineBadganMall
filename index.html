@@ -9,8 +9,8 @@
 <body>
 
 <header>
-  <h1>OnlineBadganMall</h1>
-  <p>Welcome to Timmapur’s Online Mall</p>
+  <h1>Welcome to OnlineBadganMall</h1>
+  <p>Best Quality Grocery at your doorstep</p>
 </header>
 
 <nav>
@@ -20,7 +20,7 @@
 </nav>
 
 <div class="container">
-  <!-- Product 1 -->
+  <!-- Rice -->
   <div class="product">
     <img src="Rice.jpg" alt="Rice">
     <h3>Rice</h3>
@@ -33,43 +33,44 @@
     <button onclick="addToCart('Rice', 100, 'Rice.jpg', 'qty-rice')">Add to Cart</button>
   </div>
 
-  <!-- Product 2 -->
+  <!-- Mung Dal -->
   <div class="product">
-    <img src="Mungdal.jpg" alt="Mung Dal">
+    <img src="MungDal.jpg" alt="Mung Dal">
     <h3>Mung Dal</h3>
     <p>₹200 per kg</p>
     <div class="qty-controls">
-      <button onclick="decreaseQty('qty-mung')">-</button>
-      <input type="number" id="qty-mung" value="1" min="1">
-      <button onclick="increaseQty('qty-mung')">+</button>
+      <button onclick="decreaseQty('qty-mungdal')">-</button>
+      <input type="number" id="qty-mungdal" value="1" min="1">
+      <button onclick="increaseQty('qty-mungdal')">+</button>
     </div>
-    <button onclick="addToCart('Mung Dal', 200, 'Mungdal.jpg', 'qty-mung')">Add to Cart</button>
+    <button onclick="addToCart('Mung Dal', 200, 'MungDal.jpg', 'qty-mungdal')">Add to Cart</button>
   </div>
 
-  <!-- Product 3 -->
+  <!-- Tor Dal -->
   <div class="product">
-    <img src="Tordal.jpg" alt="Tor Dal">
+    <img src="TorDal.jpg" alt="Tor Dal">
     <h3>Tor Dal</h3>
     <p>₹150 per kg</p>
     <div class="qty-controls">
-      <button onclick="decreaseQty('qty-tor')">-</button>
-      <input type="number" id="qty-tor" value="1" min="1">
-      <button onclick="increaseQty('qty-tor')">+</button>
+      <button onclick="decreaseQty('qty-tordal')">-</button>
+      <input type="number" id="qty-tordal" value="1" min="1">
+      <button onclick="increaseQty('qty-tordal')">+</button>
     </div>
-    <button onclick="addToCart('Tor Dal', 150, 'Tordal.jpg', 'qty-tor')">Add to Cart</button>
+    <button onclick="addToCart('Tor Dal', 150, 'TorDal.jpg', 'qty-tordal')">Add to Cart</button>
   </div>
 </div>
 
-<!-- CART SIDEBAR -->
-<div class="cart">
+<!-- Cart Sidebar -->
+<div class="cart" id="cart">
   <h3>Your Cart</h3>
   <ul id="cart-items"></ul>
-  <p><strong>Total: ₹<span id="total">0</span></strong></p>
-  <a href="order.html"><button>Place Order</button></a>
+  <p><strong>Total:</strong> ₹<span id="total">0</span></p>
+  <a href="order.html"><button>Go to Order Page</button></a>
 </div>
 
 <footer>
-  <p>Contact: 9999999999 | Timmapur</p>
+  <p>Contact: 9999999999 | Visit us in Timmapur</p>
+  <p>CEO: Mr. Mohammed Shafee</p>
 </footer>
 
 <script src="script.js"></script>

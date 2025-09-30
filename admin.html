@@ -5,6 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - OnlineBadganMall Orders</title>
 <link rel="stylesheet" href="style.css">
+<style>
+/* Admin Orders Page Styling */
+.admin-orders {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 10px;
+}
+
+.admin-orders ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.admin-orders li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.admin-orders li strong {
+    font-size: 18px;
+}
+
+.admin-orders button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.admin-orders button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.admin-orders p {
+    margin: 5px 0;
+}
+
+@media(max-width: 768px){
+    .admin-orders { width: 95%; padding: 5px; }
+    .admin-orders li { font-size: 14px; }
+}
+</style>
 </head>
 <body>
 
@@ -13,7 +62,7 @@
     <p>CEO: Mr. Mohammed Shafee</p>
 </header>
 
-<div class="container" id="orders-list">
+<div class="container admin-orders">
     <h2>All Orders</h2>
     <ul id="orders"></ul>
 </div>
@@ -24,8 +73,10 @@
 
 <script src="script.js"></script>
 <script>
-    // Display orders when admin page loads
-    displayOrders();
+    // Initialize: Display all orders when admin page loads
+    document.addEventListener("DOMContentLoaded", function(){
+        displayOrders();
+    });
 </script>
 </body>
 </html>

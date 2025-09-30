@@ -1,50 +1,55 @@
 // ------------------ Customer Side ------------------
 
-// Load cart from localStorage if exists
+// Load cart from localStorage
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
 function saveCart(){
     localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function addToCart(name, price){
-    // Check if product already in cart
+// Add to Cart
+function addToCart(name, price, photo, qty){
+    qty = parseInt(qty) || 1;
     const index = cart.findIndex(item => item.name === name);
     if(index >= 0){
-        cart[index].price += price; // increase price if duplicate
+        cart[index].qty += qty;
     } else {
-        cart.push({name, price});
+        cart.push({name, price, photo, qty});
     }
     saveCart();
-    renderCart();
+    alert(`${name} added to cart!`);
+    renderCart(); // optional: updates order.html if open
 }
 
+// Render Cart (order.html)
 function renderCart(){
     const cartItems = document.getElementById('cart-items');
     if(!cartItems) return;
     cartItems.innerHTML = '';
     let total = 0;
     cart.forEach((item,index)=>{
-        total += item.price;
-        cartItems.innerHTML += `<li>${item.name} - ₹${item.price} 
-            <button class="remove" onclick="removeItem(${index})">Remove</button>
-        </li>`;
+        total += item.price * item.qty;
+        cartItems.innerHTML += `<tr>
+            <td><img src="${item.photo}" alt="${item.name}"></td>
+            <td>${item.name} x ${item.qty}</td>
+            <td>₹${item.price * item.qty}</td>
+            <td><button class="remove" onclick="removeItem(${index})">Remove</button></td>
+        </tr>`;
     });
     document.getElementById('total').innerText = total;
 
-    // Update Place Order page submit button dynamically if exists
-    const submitBtn = document.getElementById('submitOrderBtn');
-    if(submitBtn) submitBtn.disabled = cart.length === 0;
-
-    // Update textarea if exists (order.html)
     const orderDetails = document.getElementById('order_details');
     if(orderDetails){
         if(cart.length > 0){
-            orderDetails.value = cart.map(i=>`${i.name} - ₹${i.price}`).join("\n");
+            orderDetails.value = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price * i.qty}`).join("\n") +
+                                 `\nTotal: ₹${total}`;
         } else {
             orderDetails.value = "Your cart is empty.";
         }
     }
+
+    const submitBtn = document.getElementById('submitOrderBtn');
+    if(submitBtn) submitBtn.disabled = cart.length === 0;
 }
 
 function removeItem(index){
@@ -63,13 +68,14 @@ if(orderForm){
             return;
         }
 
-        const orderDetailsText = cart.map(i=>`${i.name} - ₹${i.price}`).join("\n") +
-                         `\nTotal: ₹${cart.reduce((sum,i)=>sum+i.price,0)}`;
+        const total = cart.reduce((sum,i)=>sum + i.price * i.qty,0);
+        const orderDetailsText = cart.map(i=>`${i.name} x ${i.qty} - ₹${i.price * i.qty}`).join("\n") +
+                                 `\nTotal: ₹${total}`;
 
         const orderDetails = document.getElementById('order_details');
         if(orderDetails) orderDetails.value = orderDetailsText;
 
-        // Optional: Clear cart after form submission
+        // Clear cart after submission
         setTimeout(()=>{
             cart = [];
             saveCart();
@@ -77,34 +83,6 @@ if(orderForm){
             alert("Order submitted! You will receive confirmation email.");
         },100);
     });
-}
-
-// ------------------ Admin Side (localStorage orders) ------------------
-function displayOrders(){
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const ordersUl = document.getElementById('orders');
-    if(!ordersUl) return;
-    ordersUl.innerHTML = '';
-    orders.forEach((order,index)=>{
-        let li = document.createElement('li');
-        li.innerHTML = `
-        <strong>${order.name}</strong> - ${order.phone}<br>
-        ${order.address}<br>
-        Items: ${order.items.map(i=>i.name+" ₹"+i.price).join(", ")}<br>
-        Total: ₹${order.total} <br>
-        Delivered: ${order.delivered ? 'Yes' : 'No'} 
-        <button onclick="markDelivered(${index})">Mark Delivered</button>
-        <hr>
-        `;
-        ordersUl.appendChild(li);
-    });
-}
-
-function markDelivered(index){
-    let orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    orders[index].delivered = true;
-    localStorage.setItem('orders', JSON.stringify(orders));
-    displayOrders();
 }
 
 // ------------------ Initialize ------------------

@@ -51,8 +51,8 @@
     <form id="orderForm" action="https://formspree.io/f/mzzjeyby" method="POST">
         <label>Name:</label>
         <input type="text" name="name" placeholder="Your Name" required>
-       <label for="mobile">Mobile:</label>
-	<input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number" required>
+<label for="mobile">Mobile:</label>
+<input type="tel" id="mobile" name="mobile" placeholder="Enter Mobile Number" required>
 
 <script>
 const mobileInput = document.getElementById("mobile");
@@ -60,14 +60,31 @@ const mobileInput = document.getElementById("mobile");
 // Default +91 prefix set
 mobileInput.value = "+91 ";
 
-// Har input par check karo
+// Input par check karo
 mobileInput.addEventListener("input", function () {
-    // Agar +91 se start nahi hota to wapas add kar do
+    // Agar +91 se start nahi ho raha to fix karo
     if (!this.value.startsWith("+91 ")) {
         this.value = "+91 ";
     }
+
     // +91 ke baad sirf digits allow karo
     this.value = this.value.replace(/[^+\d\s]/g, "");
+
+    // Extra characters (10 digits se zyada) ko cut karo
+    let digits = this.value.replace("+91 ", "").replace(/\D/g, "");
+    if (digits.length > 10) {
+        digits = digits.substring(0, 10);
+    }
+    this.value = "+91 " + digits;
+});
+
+// Form submit par 10 digit check karo
+document.querySelector("form")?.addEventListener("submit", function (e) {
+    let digits = mobileInput.value.replace("+91 ", "").replace(/\D/g, "");
+    if (digits.length !== 10) {
+        e.preventDefault();
+        alert("Please enter a valid 10-digit mobile number after +91");
+    }
 });
 </script>
 
